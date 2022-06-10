@@ -1,4 +1,4 @@
-# ANT-i Epsidoc Memory
+# ANT-i Episodic Memory
 
 To-do list:
 - Gather directional stimuli. [Here is the folder where we can drop all stimuli that we find](https://drive.google.com/drive/folders/16j0Bs7sstCzpJgVmxZKLJM82uqa-75ZA?usp=sharing)
