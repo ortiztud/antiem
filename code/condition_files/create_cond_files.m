@@ -1,9 +1,9 @@
 %% Project ANTiEM: Attention Network Test with interactions and Episodic Memory
 % ----------------------------------------------------------
-% 
+%
 %%%%%%%%%%%%%%%%%%%%%%%%%%
 % Fernando Luna & Javier Ortiz-Tudela
-% Contact: 
+% Contact:
 % ortiztudela@psych.uni-frankfurt.com
 % LISCO Lab - Goethe Universitat
 %%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -21,7 +21,7 @@ clear; close all
 % Where are the stimuli
 stim_folder = 'directional_stimuli/';
 
-% Load conditions ANTi 
+% Load conditions ANTi
 anti = readtable('ConditionsANTIEM.xlsx');
 
 % Load stimuli info
@@ -55,6 +55,8 @@ for cb_list = 1:3
     temp(ind) = [];
     enc_stim = temp;
 
+    %% Encoding task (ANT-i)
+    % ----------------------------------------------------------
     % Loop through encoding trials
     for c_trials = 1:length(enc_stim)
 
@@ -81,8 +83,35 @@ for cb_list = 1:3
         end
     end
 
+    %% Retrieval task (Recognition memory)
+    % ----------------------------------------------------------
+    % Get encoding info (old trials)
+       n_new = length(test_stim);
+       n_old = length(enc_stim);
+
+    % Create a new table for new trials with the same variables as the
+    % encoding table but with empty rows.
+    retrieval = anti(1,:); retrieval(:,:)=[];
+    retrieval.TargetImage(1: n_new) = test_stim;
+    
+    % Add new stim
+    retrieval.TargetImage = test_stim';
+
+    % Code correct response
+    anti.CorrectAnswer = repmat({'left'},n_old,1);
+    retrieval.CorrectAnswer = repmat({'right'},n_new,1);
+
+    % Add trial type for the retrieval phase to both tables
+    anti.old_or_new = ones(height(anti),1);
+    retrieval.old_or_new = repmat(2,n_new,1);
+
+    % Merge tables
+    retrieval = [anti;retrieval];
+
+    %% Save outputs
+    % ----------------------------------------------------------
     % Print condition files
-    writetable(anti, sprintf('cond_files/encoding_list_%d', cb_list))
-    writetable(table(test_stim'), sprintf('cond_files/retrieval_list_%d', cb_list))
+    writetable(anti, sprintf('cond_files/encoding_list_%d.csv', cb_list))
+    writetable(retrieval, sprintf('cond_files/retrieval_list_%d.csv', cb_list))
 
 end
