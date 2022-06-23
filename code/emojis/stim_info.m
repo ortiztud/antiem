@@ -1,4 +1,22 @@
+%% Project ANTiEM: Attention Network Test with interactions and Episodic Memory
+% ----------------------------------------------------------
 %
+%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Fernando Luna & Javier Ortiz-Tudela
+% Contact:
+% ortiztudela@psych.uni-frankfurt.com
+% LISCO Lab - Goethe Universitat
+%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%% Script info %%%
+% This script blah blah
+%%%%%%%%%%%%%%%%%%%%%%%
+
+%% Clean everything
+clear; close all
+
+%% Read in stim
+% ----------------------------------------------------------
 project_dir = '/Volumes/GoogleDrive-108158338286165837329/Mi unidad/Memory_Attention_Javi_Fer/';
 
 % List files

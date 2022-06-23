@@ -8,8 +8,8 @@
 % LISCO Lab - Goethe Universitat
 %%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%%% Additional info %%%
-% This XXXXX
+%%% Script info %%%
+% This script blah blah
 %%%%%%%%%%%%%%%%%%%%%%%
 
 %% Clean everything
@@ -20,6 +20,9 @@ clear; close all
 
 % Where are the stimuli
 stim_folder = 'directional_stimuli/';
+
+% Where do you want the condition files to be written?
+out_folder = '/Volumes/GoogleDrive-108158338286165837329/Mi unidad/Memory_Attention_Javi_Fer/ANTI PsychoPy v.1.85.2/materials/';
 
 % Load conditions ANTi
 anti = readtable('ConditionsANTIEM.xlsx');
@@ -94,8 +97,15 @@ for cb_list = 1:3
     retrieval = anti(1,:); retrieval(:,:)=[];
     retrieval.TargetImage(1: n_new) = test_stim;
     
-    % Add new stim
-    retrieval.TargetImage = test_stim';
+    % Add new stim (half of them pointing right, the other half pointing
+    % left)
+    for c_trials = 1:n_new
+        if c_trials <= n_new
+            retrieval.TargetImage{c_trials}  = [stim_folder, test_stim{c_trials}(1:end-4), '_right.png'];
+        else
+            retrieval.TargetImage{c_trials}  = [stim_folder, test_stim{c_trials}(1:end-4), '_left.png'];
+        end
+    end
 
     % Code correct response
     anti.CorrectAnswer = repmat({'left'},n_old,1);
@@ -111,7 +121,7 @@ for cb_list = 1:3
     %% Save outputs
     % ----------------------------------------------------------
     % Print condition files
-    writetable(anti, sprintf('cond_files/encoding_list_%d.csv', cb_list))
-    writetable(retrieval, sprintf('cond_files/retrieval_list_%d.csv', cb_list))
+    writetable(anti, sprintf('%s/encoding_list_%d.csv', out_folder, cb_list))
+    writetable(retrieval, sprintf('%s/retrieval_list_%d.csv', out_folder, cb_list))
 
 end
