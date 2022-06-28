@@ -1,19 +1,21 @@
 emoji_dir='/Users/javierortiz/github_repos/emojidex-vectors/emoji'
+emoji_dir='/Users/javierortiz/Documents/svg_online'
 
 output_dir='/Users/javierortiz/Downloads/emoji_png'
-
+output_dir='/Users/javierortiz/Documents/svg_online/png'
 
 # Get file names
 #ls -d $emoji_dir/utf/* > names.txt
 #ls -1 $emoji_dir/utf/* | sed -e 's/\..*$//' >names.txt
 #ls -1 $emoji_dir/extended/* | sed -e 's/\..*$//' >names.txt
+cd $emoji_dir
 
 # Read them in
 while read -r cSub
 do
   	array[$c]=$cSub
         c=$(($c + 1))
-done < names.txt
+done < svg_names.txt
 
 for c_svg in `seq 871`
 do

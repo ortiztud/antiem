@@ -18,11 +18,14 @@ clear; close all
 %% Define some initial variables (paths and file names mostly)
 % ----------------------------------------------------------
 
+% Where is the root folder for the task?
+root_folder = '/Volumes/GoogleDrive-108158338286165837329/Mi unidad/Memory_Attention_Javi_Fer/ANTI PsychoPy v.1.85.2';
+
 % Where are the stimuli
-stim_folder = 'directional_stimuli/';
+stim_folder = [root_folder, '/materials/stim'];
 
 % Where do you want the condition files to be written?
-out_folder = '/Volumes/GoogleDrive-108158338286165837329/Mi unidad/Memory_Attention_Javi_Fer/ANTI PsychoPy v.1.85.2/materials/';
+out_folder = [root_folder, '/materials'];
 
 % Load conditions ANTi
 anti = readtable('ConditionsANTIEM.xlsx');
@@ -67,22 +70,22 @@ for cb_list = 1:3
         if strcmpi(anti.TargetDirection{c_trials}, 'left')
 
             % Select encoding stimuli (by default, all looking left)
-            anti.TargetImage{c_trials} = [stim_folder, enc_stim{c_trials}];
+            anti.TargetImage{c_trials} = [stim_folder, '/', enc_stim{c_trials}];
         else
 
             % Select encoding stimuli (right)
-            anti.TargetImage{c_trials} = [stim_folder, enc_stim{c_trials}(1:end-4), '_right.png'];
+            anti.TargetImage{c_trials} = [stim_folder, '/', enc_stim{c_trials}(1:end-4), '_right.png'];
         end
 
         % Check distractor direction
         if strcmpi(anti.DistractDirection{c_trials}, 'left')
 
             % Select encoding stimuli (by default, all looking left)
-            anti.DistractImage{c_trials} = [stim_folder, enc_stim{c_trials}];
+            anti.DistractImage{c_trials} = [stim_folder, '/', enc_stim{c_trials}];
         else
 
             % Select encoding stimuli (right)
-            anti.DistractImage{c_trials} = [stim_folder, enc_stim{c_trials}(1:end-4), '_right.png'];
+            anti.DistractImage{c_trials} = [stim_folder, '/', enc_stim{c_trials}(1:end-4), '_right.png'];
         end
     end
 
@@ -101,9 +104,9 @@ for cb_list = 1:3
     % left)
     for c_trials = 1:n_new
         if c_trials <= n_new
-            retrieval.TargetImage{c_trials}  = [stim_folder, test_stim{c_trials}(1:end-4), '_right.png'];
+            retrieval.TargetImage{c_trials}  = [stim_folder, '/', test_stim{c_trials}(1:end-4), '_right.png'];
         else
-            retrieval.TargetImage{c_trials}  = [stim_folder, test_stim{c_trials}(1:end-4), '_left.png'];
+            retrieval.TargetImage{c_trials}  = [stim_folder, '/', test_stim{c_trials}(1:end-4), '_left.png'];
         end
     end
 
