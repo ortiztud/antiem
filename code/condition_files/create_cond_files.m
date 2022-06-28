@@ -19,13 +19,13 @@ clear; close all
 % ----------------------------------------------------------
 
 % Where is the root folder for the task?
-root_folder = '/Volumes/GoogleDrive-108158338286165837329/Mi unidad/Memory_Attention_Javi_Fer/ANTI PsychoPy v.1.85.2';
+root_folder = '/Volumes/GoogleDrive-108158338286165837329/Mi unidad/Memory_Attention_Javi_Fer/ANTIEM PsychoPy v.1.85.2/';
 
 % Where are the stimuli
-stim_folder = [root_folder, '/materials/stim'];
+stim_folder = ['materials/stim'];
 
 % Where do you want the condition files to be written?
-out_folder = [root_folder, '/materials'];
+out_folder = [root_folder, 'materials'];
 
 % Load conditions ANTi
 anti = readtable('ConditionsANTIEM.xlsx');
