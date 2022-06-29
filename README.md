@@ -1,6 +1,5 @@
-# ANT-i Episodic Memory
+# ANTI Episodic Memory
 
-To-do list:
-- Gather directional stimuli. [Here is the folder where we can drop all stimuli that we find](https://drive.google.com/drive/folders/16j0Bs7sstCzpJgVmxZKLJM82uqa-75ZA?usp=sharing)
-- Adapt ANT-i's scripts
-- Write abstract for RECA. [Here we can start drafting and exchanging comments/ideas](https://docs.google.com/document/d/1auwOmXaAm5oqvEHkhaHw9XpigcivIs4ehK1vRtk01To/edit?usp=sharing)
+Transient shifts of attention during episodic encoding: a Posnerian approach. 
+
+The relationship between attention and memory has long been a focus of cognitive research. However, the exact nature of this interaction still remains elusive due in part to its high dimensionality. Here we take a Posnerian approach to characterize the attentional state of an encoding period to later measure the long-lasting effects of different alterations in this state. We designed an online experiment in which participants perform an adapted version of the Attention Network Test for Interactions (ANTI).
