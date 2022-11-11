@@ -1,0 +1,141 @@
+---
+title: "Analysis of the overall recognition task of the ANTiEM experiment."
+output: html_document
+---
+Author: Javier Ortiz-Tudela (Goethe Uni)
+Started on: 11.11.22
+
+```{r setup, include=FALSE}
+## Load libraries.
+library(ggpubr); library(dplyr); library(psycho)
+
+## Set directories
+main_dir <- '/Users/javierortiz/Library/CloudStorage/GoogleDrive-fjavierot@gmail.com/Mi unidad/colab_projects/Memory_Attention_Javi_Fer/'
+data_dir <- paste(main_dir , "pilot_data/", sep="/")
+func_dir <- '/Users/javierortiz/github_repos/antiem/code/_functions'
+
+```
+
+```{r load data, include=FALSE}
+# File name 
+filename <- 'group_task-antiem_beh.csv'
+
+ # Read data
+full_data <- read.csv2(paste(data_dir,  filename, sep="/"), sep=",")
+
+# Fix some R stuff
+full_data$anti_rt <- as.numeric(full_data$anti_rt)
+full_data$recog_rt <- as.numeric(full_data$recog_rt)
+full_data$old_or_new <- as.factor(full_data$old_or_new)
+```
+
+## Compute overall performance
+I am computing this hits and FAs and dprime below
+```{r}
+# Aggregate
+agg_data <- full_data %>% 
+  group_by(participant, old_or_new) %>% 
+  summarise(mean_acc = mean(recog_acc),
+            sd_acc = sd(recog_acc))
+
+# Plot
+ggplot(data = agg_data,
+       mapping = aes(x=old_or_new, y = mean_acc)) +
+  geom_boxplot() +
+  geom_jitter(shape=10, position=position_jitter(0.2)) +
+  ylab("Mean acc") + 
+  ylim(c(0,1)) +
+  labs(title = paste("Overall acc")) +
+  theme_bw()
+
+# How many Ps?
+which_subs <- unique(full_data$participant)
+n <- length(which_subs)
+
+# Init
+sdt_out <- data.frame(participant=rep(9999,n),dprime=rep(9999,n),
+                      beta=rep(9999,n))
+
+# Loop through participant
+for (c_sub in 1:n){
+  
+  # Get number of responses of each type
+  sdt_nbrs <- full_data %>% 
+    filter(participant == which_subs[c_sub]) %>% 
+    group_by(participant, recog_acc) %>% 
+    count(old_or_new)
+
+  # Re-arrange them them
+  n_hit <- sdt_nbrs$n[sdt_nbrs$old_or_new==1 & sdt_nbrs$recog_acc==1]
+  n_miss <- sdt_nbrs$n[sdt_nbrs$old_or_new==1 & sdt_nbrs$recog_acc==0]
+  n_fa <- sdt_nbrs$n[sdt_nbrs$old_or_new==2 & sdt_nbrs$recog_acc==0]
+  n_cr <- sdt_nbrs$n[sdt_nbrs$old_or_new==2 & sdt_nbrs$recog_acc==1]
+  
+  # Compute dprime
+  temp <- dprime(n_hit, n_miss, n_fa, n_cr)
+  
+  # Store it
+  sdt_out$participant[c_sub] <- which_subs[c_sub]
+  sdt_out$hit[c_sub] <- n_hit/(n_hit+n_miss)
+  sdt_out$fa[c_sub] <- n_fa/(n_fa+n_cr)
+  sdt_out$dprime[c_sub] <- temp$dprime
+  sdt_out$beta[c_sub] <- temp$beta
+
+}
+
+```
+Compute a random performance threshold to identify participants with 'at chance' memory performance
+```{r}
+# Number of old and new manually to triple check.
+nbrs <- full_data %>% 
+  count(old_or_new)
+
+# Get threshold for dprime
+source(paste(func_dir, "dprime_thres.R", sep="/"))
+thr <- dprime_thres(nbrs$n[nbrs$old_or_new==1]/n, nbrs$n[nbrs$old_or_new==2]/n, 5000, .95)
+
+# Poor performers
+ind <- sdt_out$dprime < thr
+poor_performers <- sdt_out$participant[ind]
+
+# Echo to terminal
+message("The number of participants below the threshold is ", length(poor_performers))
+message("Participants IDs :", poor_performers)
+
+# Plot
+ggplot(data = sdt_out,
+       aes(x=1,y=dprime,fill=1)) +
+  geom_boxplot(alpha = .6)+
+  geom_point(size = 1, alpha = 0.6) +
+  ylab('d prime') +
+  theme(legend.position = "none")+
+  ylim(c(0,1.5)) +
+  geom_hline(aes(yintercept = thr, colour = "red"))+ 
+  ggtitle("Item recognition") +
+  theme_bw()
+
+```
+I will remove below those participants with performance below the threshold above
+
+```{r}
+# Remove poor performers
+full_data <- full_data %>%
+  filter(!(participant %in% poor_performers))
+
+# Aggregate
+agg_data <- full_data %>% 
+  group_by(participant, old_or_new) %>% 
+  summarise(mean_acc = mean(recog_acc),
+            sd_acc = sd(recog_acc))
+
+# Plot
+ggplot(data = agg_data,
+       mapping = aes(x=old_or_new, y = mean_acc)) +
+  geom_boxplot() +
+  geom_jitter(shape=10, position=position_jitter(0.2)) +
+  ylab("Mean acc") + 
+  ylim(c(0,1)) +
+  labs(title = paste("Overall acc")) +
+  theme_bw()
+
+```

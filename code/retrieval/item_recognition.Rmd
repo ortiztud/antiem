@@ -1,0 +1,152 @@
+---
+title: "Analysis of the recognition task of the ANTiEM experiment."
+output: html_document
+---
+
+Author: Javier Ortiz-Tudela (Goethe Uni)
+
+Started on: 11.11.22
+
+We will look at retrieval performance as a function of the encoding conditions. At this stage I'm only computing averages and creating some plots for visualisation. It doesn't make sense to run stats with only five participants.
+
+```{r setup, include=FALSE}
+## Load libraries.
+library(ggpubr)
+library(rstatix)
+library(dplyr)
+
+## Set directories
+main_dir <- '/Users/javierortiz/Library/CloudStorage/GoogleDrive-fjavierot@gmail.com/Mi unidad/colab_projects/Memory_Attention_Javi_Fer/'
+data_dir <- paste(main_dir , "pilot_data/", sep="/")
+func_dir <- '/Users/javierortiz/github_repos/antiem/code/_functions'
+fig_dir <- '/Users/javierortiz/Library/CloudStorage/GoogleDrive-fjavierot@gmail.com/Mi unidad/colab_projects/Memory_Attention_Javi_Fer/figures'
+
+```
+
+```{r load data, include=FALSE}
+# File name 
+filename <- 'group_task-antiem_beh.csv'
+
+ # Read data
+full_data <- read.csv2(paste(data_dir,  filename, sep="/"), sep=",")
+
+# Fix some R stuff
+full_data$anti_rt <- as.numeric(full_data$anti_rt)
+full_data$recog_rt <- as.numeric(full_data$recog_rt)
+full_data$old_or_new <- as.factor(full_data$old_or_new)
+
+# Select only new trials
+full_data <- full_data %>% 
+  filter(old_or_new == 1)
+
+# Select only correct encoding trials
+full_data <- full_data %>%
+  filter(anti_acc == 1)
+```
+# Congruency
+We can aggregate by congruity to look at performance.
+
+```{r}
+# Aggregate
+agg_data <- full_data %>% 
+  group_by(participant, congruency) %>%
+  summarise(mean_acc = mean(recog_acc),
+            sd_acc = sd(recog_acc))
+
+# Plot
+ggplot(data = agg_data,
+       aes(x = congruency, y = mean_acc, fill = congruency)) +
+  geom_boxplot(position = position_nudge(x = 0, y = 0), alpha = .4)+
+  geom_point(size = 1, alpha = 0.3) +
+  geom_line(aes(group = participant), alpha = .3) +
+  stat_summary(fun= mean, geom="point", shape=20, size=7, color="red", fill="red") +
+  ggtitle("Mean acc by congruity") +
+  ylim(c(0,1)) +
+  ylab("Recog acc") +
+  labs(fill='Control') +
+  theme(plot.title.position = "plot") +
+  theme_bw()
+
+full_data %>% 
+  group_by(congruency) %>% 
+  summarise(cong_acc = mean(recog_acc))
+```
+
+# Validity
+We can aggregate by validity to look at performance.
+```{r}
+# Aggregate
+agg_data <- full_data %>% 
+  group_by(participant, validity) %>% 
+  summarise(mean_acc = mean(recog_acc),
+            sd_acc = sd(recog_acc))
+
+# Plot
+ggplot(data = agg_data,
+       aes(x = validity, y = mean_acc, fill = validity)) +
+  geom_boxplot(position = position_nudge(x = 0, y = 0), alpha = .4)+
+  geom_point(size = 1, alpha = 0.3) +
+  geom_line(aes(group = participant), alpha = .3) +
+  stat_summary(fun= mean, geom="point", shape=20, size=7, color="red", fill="red") +
+  ggtitle("Mean acc by validity") +
+  ylim(c(0,1)) +
+  ylab("Recog acc") +
+  labs(fill='Orienting') +
+  theme(plot.title.position = "plot") +
+  theme_bw()
+
+full_data %>% 
+  group_by(validity) %>% 
+  summarise(val_acc = mean(recog_acc))
+
+```
+# Tone
+We can aggregate by tone to look at performance.
+```{r}
+# Aggregate
+agg_data <- full_data %>% 
+  group_by(participant, tone) %>% 
+  summarise(mean_acc = mean(recog_acc),
+            sd_acc = sd(recog_acc)) %>% 
+  ungroup()
+
+# Plot
+ggplot(data = agg_data,
+       aes(x = tone, y = mean_acc, fill = tone)) +
+  geom_boxplot(position = position_nudge(x = 0, y = 0), alpha = .4)+
+  geom_point(size = 1, alpha = 0.3) +
+  geom_line(aes(group = participant), alpha = .3) +
+  stat_summary(fun= mean, geom="point", shape=20, size=7, color="red", fill="red") +
+  ggtitle("Mean acc by tone") +
+  ylim(c(0,1)) +
+  ylab("Recog acc") +
+  labs(fill='Alertness') +
+  theme(plot.title.position = "plot") +
+  theme_bw()
+
+full_data %>% 
+  group_by(tone) %>% 
+  summarise(alert_acc = mean(recog_acc))
+
+```
+
+## Compute rANOVA
+This is just an example that we can re-use to compute rANOVAs when it becomes necessary
+```{r}
+# Need to select only the to-be-used columns
+data_to_stat <-  subset(x = agg_data, select = c(participant, tone, mean_acc))
+
+# Run ANOVA
+res.aov <- anova_test(data = data_to_stat, dv = mean_acc, wid = participant, within = c(tone))
+get_anova_table(res.aov)
+
+# Pair-wise comparisons
+pwc <- data_to_stat %>%
+  pairwise_t_test(
+    mean_acc ~ tone, paired = TRUE,
+    p.adjust.method = "bonferroni"
+  )
+pwc
+
+```
+
