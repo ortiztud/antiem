@@ -22,10 +22,10 @@ clear; close all
 original_dir = '/Volumes/GoogleDrive-108158338286165837329/Mi unidad/Memory_Attention_Javi_Fer/directional_database';
 
 % Task directory
-task_dir = '/Volumes/GoogleDrive-108158338286165837329/Mi unidad/Memory_Attention_Javi_Fer/ANTI PsychoPy v.1.85.2/materials/stim';
+task_dir = '/Volumes/GoogleDrive-108158338286165837329/Mi unidad/Memory_Attention_Javi_Fer/ANTIEM PsychoPy v.1.85.2/';
 
 % Read in stim info. We will flip only those that we want for the task
-stim_info = readtable(sprintf('%s/stim_info.xlsx', original_dir), "ReadVariableNames",true);
+stim_info = readtable(sprintf('%s/materials/stim_info.xlsx', task_dir), "ReadVariableNames",true);
 
 % temp = dir(sprintf('%s/*png', original_dir));
 % for c_stim = 1:length(temp)
@@ -55,10 +55,10 @@ for c_stim = 1:height(stim_info)
     alpha = alpha(:,end:-1:1);
 
     % Grab a copy of the original (leftwards facing) stimulus
-    copyfile([original_dir, '/selected/', filename], [task_dir, '/', filename]);
+    copyfile([original_dir, '/selected/', filename], [task_dir, '/materials/stim/', filename]);
 
     % Save new stim
-    imwrite(right_stim, sprintf('%s/%s_right.png', ...
+    imwrite(right_stim, sprintf('%s/materials/stim/%s_right.png', ...
         task_dir, filename(1:end-4)), 'Alpha', alpha)
 
     % Echo to terminal
